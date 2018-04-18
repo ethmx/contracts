@@ -3,7 +3,7 @@ const Web3 = require('web3');
 const {publishToSwarm} = require('./utils.js');
 const {abi} = require('./contract.js');
 
-const web3 = new Web3(new Web3('https://rinkeby.infura.io/'));
+const web3 = new Web3(new Web3.providers.HttpProvider('https://rinkeby.infura.io/'));
 
 // Initialize new contract
 const reg = new web3.eth.Contract(abi, '0x57147069B117fD911Da6c43F3fBdC54a7A7D8C1d');

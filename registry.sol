@@ -6,10 +6,9 @@ contract Registry {
     mapping(bytes32 => address) transfers;
     mapping(bytes32 => Package) packages;
 
-    address constant NULL = 0x0;
+    address constant ZEROADDR = 0x0;
 
     struct Package {
-        bytes32 name;
         address owner;
         uint8 latestMajor;
         mapping(uint8 => Major) majors;
@@ -45,9 +44,9 @@ contract Registry {
         require(_name.length > 0);
 
         bytes32 name = resolve(_name);
-        require(packages[name].owner == NULL);
+        require(packages[name].owner == ZEROADDR);
 
-        packages[name] = Package(name, msg.sender, 0);
+        packages[name] = Package(msg.sender, 0);
         names[name] = _name;
 
         return name;
@@ -179,7 +178,7 @@ contract Registry {
         returns(bytes32)
     {
         Package memory package = packages[_package];
-        require(package.owner != NULL); // Package exists
+        require(package.owner != ZEROADDR); // Package exists
 
         uint8 major = package.latestMajor;
         uint8 minor = packages[_package].majors[major].latestMinor;
@@ -196,7 +195,7 @@ contract Registry {
     {
         Package memory package = packages[_package];
 
-        require(package.owner != NULL); // Package exists
+        require(package.owner != ZEROADDR); // Package exists
         require(package.latestMajor <= _major); // Major exists
 
         uint8 minor = packages[_package].majors[_major].latestMinor;
@@ -213,7 +212,7 @@ contract Registry {
     {
         Package memory package = packages[_package];
 
-        require(package.owner != NULL); // Package exists
+        require(package.owner != ZEROADDR); // Package exists
         require(package.latestMajor <= _major); // Major exists
 
         Major memory major = packages[_package].majors[_major];
@@ -248,11 +247,11 @@ contract Registry {
     function receive(bytes32 _name)
         public
     {
-        require(transfers[_name] != NULL);
+        require(transfers[_name] != ZEROADDR);
         require(transfers[_name] == msg.sender);
 
         packages[_name].owner = msg.sender;
-        transfers[_name] = NULL;
+        transfers[_name] = ZEROADDR;
 
         emit Transfered(_name);
     }
