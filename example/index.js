@@ -12,7 +12,6 @@ const reg = new web3.eth.Contract(abi, '0x57147069B117fD911Da6c43F3fBdC54a7A7D8C
 async function register() {
   // Publish current directory
   const bzz = await publishToSwarm('.');
-
   // Register package and get it's name
   const hash = await reg.methods.register('registry_example').send();
 
@@ -22,6 +21,8 @@ async function register() {
 
 // Publish new package version
 async function publish(major, minor, build) {
+  // Publish current directory
+  const bzz = await publishToSwarm('.');
   // Convert name to hash according to registry algorithm
   const hash = await reg.methods.resolve('registry_example').call();
 
@@ -29,5 +30,17 @@ async function publish(major, minor, build) {
   await reg.methods.publish(hash, major, minor, build, bzz).send();
 }
 
+// Publish new package version
+async function getLatest() {
+  // Convert name to hash according to registry algorithm
+  const hash = await reg.methods.resolve('registry_example').call();
+
+  // Publish new version
+  const bzz = await reg.methods.getLatestMajor(hash).call();
+
+  // Do something with bzz manifest
+}
+
 exports.register = register;
 exports.publish = publish;
+exports.getLatest = getLatest;
