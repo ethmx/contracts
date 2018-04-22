@@ -2,7 +2,6 @@ pragma solidity ^0.4.0;
 
 
 contract Registry {
-    mapping(bytes32 => bytes) names;
     mapping(bytes32 => address) transfers;
     mapping(bytes32 => Package) packages;
 
@@ -29,6 +28,8 @@ contract Registry {
         bool isPublished;
     }
 
+    // Registered new package
+    event Registered(bytes32 indexed package, string name);
     // Notify package version was publish
     event Published(bytes32 indexed package, uint8 indexed major, uint8 indexed minor, uint16 build);
     // Notify package version was unpublish
@@ -41,13 +42,15 @@ contract Registry {
         public
         returns(bytes32)
     {
-        require(_name.length > 0);
+        // TODO: Choose proper name length limits
+        require(_name.length > 0 && _name.length < 255);
 
         bytes32 name = resolve(_name);
         require(packages[name].owner == ZEROADDR);
 
         packages[name] = Package(msg.sender, 0);
-        names[name] = _name;
+
+        emit Registered(_name);
 
         return name;
     }
